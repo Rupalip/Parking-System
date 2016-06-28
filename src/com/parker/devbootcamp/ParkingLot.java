@@ -9,19 +9,36 @@ import java.util.List;
 public class ParkingLot {
 
   private List<ParkingSlot> issuedParkingSlots;
+  private List<ParkingLotObserver> parkingLotObservers;
+  private int noOfSlot1;
   private final int noOfSlots;
+
+
+  public boolean addObserver(ParkingLotObserver parkingLotObserver) {
+    return parkingLotObservers.add(parkingLotObserver);
+  }
+
+  public boolean removeObserver(ParkingLotObserver parkingLotObserver) {
+    return parkingLotObservers.remove(parkingLotObserver);
+  }
 
   public ParkingLot(int noOfSlots) {
     this.noOfSlots = noOfSlots;
     issuedParkingSlots = new ArrayList<>();
+    parkingLotObservers = new ArrayList<>();
   }
 
-  public ParkingToken getNextAvailableSlot() {
+  public ParkingToken park() {
     if (!isSlotsAvailable())
       throw new ParkingLotUnavailableException("Parking lot is full");
-    ParkingSlot assignedParkingSlot = new ParkingSlot("P123");
-    issuedParkingSlots.add(assignedParkingSlot);
-    return new ParkingToken("s12345", System.currentTimeMillis(), assignedParkingSlot);
+    else {
+      ParkingSlot assignedParkingSlot = new ParkingSlot("P123");
+      issuedParkingSlots.add(assignedParkingSlot);
+      if (!isSlotsAvailable())
+        notifyAllObservers();
+      return new ParkingToken("s12345", System.currentTimeMillis(), assignedParkingSlot);
+    }
+
   }
 
   private boolean isSlotsAvailable() {
@@ -33,5 +50,11 @@ public class ParkingLot {
       return true;
     }
     return false;
+  }
+
+  public void notifyAllObservers() {
+    for (ParkingLotObserver observer : parkingLotObservers) {
+      observer.updateParkingFull();
+    }
   }
 }

@@ -6,12 +6,24 @@ package com.parker.devbootcamp;
 public class ParkingOwner implements ParkingLotObserver {
 
 
-  private void displayParkinfFull(){
-      System.out.println("Parking is full");
+  private void displayParkinfFull() {
+    System.out.println("Parking is full");
   }
 
   @Override
-  public void updateParkingFull() {
-    displayParkinfFull();
+  public void update(ParkingLotEventTypes event) {
+    switch (event) {
+      case PARKING_AVAILABLE:
+        displayParkinfFull();
+        break;
+      case PARKING_FULL:
+        updateParkingIsAvailable();
+        break;
+
+    }
+
+  }
+
+  private void updateParkingIsAvailable() {
   }
 }

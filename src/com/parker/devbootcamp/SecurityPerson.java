@@ -7,8 +7,12 @@ public class SecurityPerson implements ParkingLotObserver {
 
 
   @Override
-  public void updateParkingFull() {
+  public void update(ParkingLotEventTypes event) {
     redirectSecurityStaff();
+  }
+
+  public void updateParkingIsAvailable() {
+
   }
 
   private void redirectSecurityStaff() {

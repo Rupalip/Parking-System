@@ -10,7 +10,6 @@ public class ParkingLot {
 
   private List<ParkingSlot> issuedParkingSlots;
   private List<ParkingLotObserver> parkingLotObservers;
-  private int noOfSlot1;
   private final int noOfSlots;
 
 
@@ -35,7 +34,7 @@ public class ParkingLot {
       ParkingSlot assignedParkingSlot = new ParkingSlot("P123");
       issuedParkingSlots.add(assignedParkingSlot);
       if (!isSlotsAvailable())
-        notifyAllObservers();
+        notifyAllObservers(ParkingLotEventTypes.PARKING_FULL);
       return new ParkingToken("s12345", System.currentTimeMillis(), assignedParkingSlot);
     }
 
@@ -47,14 +46,22 @@ public class ParkingLot {
 
   public boolean unpark(ParkingToken token) {
     if (issuedParkingSlots.remove(token.getParkingSlot())) {
+      if (issuedParkingSlots.size() == noOfSlots - 1)
+        notifyParkingAvailableToObserver(ParkingLotEventTypes.PARKING_AVAILABLE);
       return true;
     }
     return false;
   }
 
-  public void notifyAllObservers() {
+  private void notifyParkingAvailableToObserver(ParkingLotEventTypes event) {
     for (ParkingLotObserver observer : parkingLotObservers) {
-      observer.updateParkingFull();
+      observer.update(event);
+    }
+  }
+
+  public void notifyAllObservers(ParkingLotEventTypes event) {
+    for (ParkingLotObserver observer : parkingLotObservers) {
+      observer.update(event);
     }
   }
 }

@@ -3,9 +3,7 @@ package com.parker.devbootcamp;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by vohray on 6/28/16.
@@ -49,9 +47,38 @@ public class ParkingLotTest {
 
     parkingLot.park();
 
-    verify(parkingOwner, times(1)).updateParkingFull();
-    verify(securityPerson, times(1)).updateParkingFull();
+    verify(parkingOwner, times(1)).update(ParkingLotEventTypes.PARKING_FULL);
+    verify(securityPerson, times(1)).update(ParkingLotEventTypes.PARKING_FULL);
 
   }
 
+  @Test
+  public void shouldNotifyObserverWhenParkingIsAvailable() {
+
+    ParkingLot parkingLot = new ParkingLot(1);
+
+    ParkingOwner parkingOwner = mock(ParkingOwner.class);
+    parkingLot.addObserver(parkingOwner);
+
+    ParkingToken token = parkingLot.park();
+    parkingLot.unpark(token);
+
+    verify(parkingOwner, times(1)).update(ParkingLotEventTypes.PARKING_AVAILABLE);
+  }
+
+  @Test
+  public void shouldNotifyObserverOnlyOnceWhenParkingIsAvailable() {
+
+    ParkingLot parkingLot = new ParkingLot(2);
+
+    ParkingOwner parkingOwner = mock(ParkingOwner.class);
+    parkingLot.addObserver(parkingOwner);
+
+    ParkingToken firstToken = parkingLot.park();
+    ParkingToken secondToken = parkingLot.park();
+    parkingLot.unpark(firstToken);
+    parkingLot.unpark(secondToken);
+
+    verify(parkingOwner, times(1)).update(ParkingLotEventTypes.PARKING_AVAILABLE);
+  }
 }

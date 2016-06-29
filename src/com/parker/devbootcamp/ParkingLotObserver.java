@@ -5,7 +5,7 @@ package com.parker.devbootcamp;
  */
 public interface ParkingLotObserver {
 
-  public void updateParkingFull();
+  public void update(ParkingLotEventTypes event);
 
 
 }
